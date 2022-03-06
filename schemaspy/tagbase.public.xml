@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<database name="tagbase" schema="public" type="PostgreSQL - 14.2">
+   <sequences>
+      <sequence increment="1" name="observation_types_variable_id_seq" startValue="1"/>
+      <sequence increment="1" name="submission_submission_id_seq" startValue="1"/>
+      <sequence increment="1" name="submission_tag_id_seq" startValue="1"/>
+   </sequences>
+   <tables>
+      <table name="data_histogram_bin_data" numRows="0" remarks="Conatins the frequency for corresponding summary data binning schemes (migrated from proc_observations)" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="submission_id" nullable="false" remarks="Unique numeric ID assigned upon submission of a tag eTUFF data file for ingest/importation into Tagbase" size="19" type="int8" typeCode="-5">
+            <parent column="submission_id" foreignKey="data_histogram_bin_data_submission_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="submission"/>
+            <parent column="submission_id" foreignKey="histogrambindata_dataposition_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_position"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="tag_id" nullable="false" remarks="Unique numeric Tag ID associated with the ingested tag data file" size="19" type="int8" typeCode="-5">
+            <parent column="tag_id" foreignKey="histogrambindata_dataposition_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_position"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="bin_id" nullable="false" remarks="Unique bin ID for the summary bin-frequency class" size="19" type="int8" typeCode="-5">
+            <parent column="bin_id" foreignKey="histogrambindata_histogrambininfo_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_histogram_bin_info"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="bin_class" nullable="false" remarks="Sequential numeric bin class identifier" size="10" type="int4" typeCode="4">
+            <parent column="bin_class" foreignKey="histogrambindata_histogrambininfo_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_histogram_bin_info"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="date_time" nullable="false" remarks="Date/time stamp of the tag summarized bin-frequency data record" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="5" name="variable_value" nullable="false" remarks="Aggregate measure for the given bin-interval of the geophysical value of the observed tag variable record" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="position_date_time" nullable="true" remarks="Date/time stamp of nearest matched associated positional record" size="35" type="timestamptz" typeCode="93">
+            <parent column="date_time" foreignKey="histogrambindata_dataposition_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_position"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="variable_id" nullable="false" remarks="Unique variable identifier for the data record from the source eTUFF file ingested.  The variable_id is based on observation or measurment variables listed in the observation_types table.  Note that records in this table are NOT expected to be equivalent to those in the variable_id column of the data_histogram_bin_info table" size="19" type="int8" typeCode="-5">
+            <parent column="variable_id" foreignKey="datahistogrambindata_observationtypes_fkey" implied="false" onDeleteCascade="false" schema="public" table="observation_types"/>
+         </column>
+         <primaryKey column="submission_id" sequenceNumberInPK="1"/>
+         <primaryKey column="tag_id" sequenceNumberInPK="2"/>
+         <primaryKey column="bin_id" sequenceNumberInPK="3"/>
+         <primaryKey column="bin_class" sequenceNumberInPK="4"/>
+         <primaryKey column="date_time" sequenceNumberInPK="5"/>
+         <primaryKey column="variable_id" sequenceNumberInPK="6"/>
+         <index name="data_histogram_bin_data_pkey" unique="true">
+            <column ascending="true" name="submission_id"/>
+            <column ascending="true" name="tag_id"/>
+            <column ascending="true" name="bin_id"/>
+            <column ascending="true" name="bin_class"/>
+            <column ascending="true" name="date_time"/>
+            <column ascending="true" name="variable_id"/>
+         </index>
+         <index name="data_histogram_bin_data_date_time_index" unique="false">
+            <column ascending="true" name="date_time"/>
+         </index>
+         <index name="data_histogram_bin_data_pos_date_time_index" unique="false">
+            <column ascending="true" name="position_date_time"/>
+         </index>
+      </table>
+      <table name="data_histogram_bin_info" numRows="0" remarks="Contains definitions of binning schemes for summary tag data (migrated from proc_observations)" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="bin_id" nullable="false" remarks="Unique bin ID for the summary bin-frequency class" size="19" type="int8" typeCode="-5">
+            <child column="bin_id" foreignKey="histogrambindata_histogrambininfo_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_histogram_bin_data"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="bin_class" nullable="false" remarks="Sequential numeric bin class identifier" size="10" type="int4" typeCode="4">
+            <child column="bin_class" foreignKey="histogrambindata_histogrambininfo_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_histogram_bin_data"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="2" name="min_value" nullable="false" remarks="Value of minimum/lower bound of bin interval" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="3" name="max_value" nullable="false" remarks="Value of maximum/upper bound of bin interval" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="variable_id" nullable="false" remarks="Unique variable identifier for the data record from the source eTUFF file ingested.  The variable_id is based on observation or measurment variables listed in the observation_types table.  Note that records in this table are NOT expected to be equivalent to those in the variable_id column of the data_histogram_bin_data table" size="19" type="int8" typeCode="-5">
+            <parent column="variable_id" foreignKey="data_histogram_bin_info" implied="false" onDeleteCascade="false" schema="public" table="observation_types"/>
+         </column>
+         <primaryKey column="variable_id" sequenceNumberInPK="1"/>
+         <primaryKey column="bin_id" sequenceNumberInPK="2"/>
+         <primaryKey column="bin_class" sequenceNumberInPK="3"/>
+         <index name="data_histogram_bin_info_pkey" unique="true">
+            <column ascending="true" name="variable_id"/>
+            <column ascending="true" name="bin_id"/>
+            <column ascending="true" name="bin_class"/>
+         </index>
+         <index name="data_histogram_bin_info_bin_id_bin_class_key" unique="true">
+            <column ascending="true" name="bin_id"/>
+            <column ascending="true" name="bin_class"/>
+         </index>
+      </table>
+      <table name="data_position" numRows="0" remarks="Contains the tag positional data series with associated Lat/Lon error estimates where available (migrated from proc_observations)" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="6" id="0" name="date_time" nullable="false" remarks="Date/time stamp of the tag positional data record" size="35" type="timestamptz" typeCode="93">
+            <child column="position_date_time" foreignKey="histogrambindata_dataposition_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_histogram_bin_data"/>
+            <child column="position_date_time" foreignKey="dataprofile_dataposition_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_profile"/>
+            <child column="position_date_time" foreignKey="datetimeseries_datapositions_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_time_series"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="1" name="lat" nullable="false" remarks="Latitude in decimal degrees of the positional data tag record" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="2" name="lon" nullable="false" remarks="Longitude in decimal degrees of the positional data tag record" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="3" name="lat_err" nullable="true" remarks="Error associated with the tag record Laitudiinal positional estimate" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="4" name="lon_err" nullable="true" remarks="Error associated with the tag record Longitudinal positional estimate" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="submission_id" nullable="false" remarks="Unique numeric ID assigned upon submission of a tag eTUFF data file for ingest/importation into Tagbase" size="19" type="int8" typeCode="-5">
+            <child column="submission_id" foreignKey="histogrambindata_dataposition_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_histogram_bin_data"/>
+            <child column="submission_id" foreignKey="dataprofile_dataposition_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_profile"/>
+            <child column="submission_id" foreignKey="datetimeseries_datapositions_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_time_series"/>
+            <parent column="submission_id" foreignKey="data_position_submission_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="submission"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="tag_id" nullable="false" remarks="Unique numeric Tag ID associated with the ingested tag data file" size="19" type="int8" typeCode="-5">
+            <child column="tag_id" foreignKey="histogrambindata_dataposition_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_histogram_bin_data"/>
+            <child column="tag_id" foreignKey="dataprofile_dataposition_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_profile"/>
+            <child column="tag_id" foreignKey="datetimeseries_datapositions_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_time_series"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="argosLC" nullable="true" remarks="Single character Argos Location Class positional quality code based on argosLC scheme defined by Argos System" size="1" type="bpchar" typeCode="1"/>
+         <primaryKey column="submission_id" sequenceNumberInPK="1"/>
+         <primaryKey column="tag_id" sequenceNumberInPK="2"/>
+         <primaryKey column="date_time" sequenceNumberInPK="3"/>
+         <index name="data_position_pkey" unique="true">
+            <column ascending="true" name="submission_id"/>
+            <column ascending="true" name="tag_id"/>
+            <column ascending="true" name="date_time"/>
+         </index>
+         <index name="data_position_date_time_index" unique="false">
+            <column ascending="true" name="date_time"/>
+         </index>
+         <index name="data_position_latlontime_index" unique="false">
+            <column ascending="true" name="date_time"/>
+            <column ascending="true" name="lat"/>
+            <column ascending="true" name="lon"/>
+            <column ascending="true" name="submission_id"/>
+            <column ascending="true" name="tag_id"/>
+         </index>
+      </table>
+      <table name="data_profile" numRows="0" remarks="Contains the summarized bin profile tag observations (migrated from proc_observations)" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="submission_id" nullable="false" remarks="Unique numeric ID assigned upon submission of a tag eTUFF data file for ingest/importation into Tagbase" size="19" type="int8" typeCode="-5">
+            <parent column="submission_id" foreignKey="dataprofile_submission_fkey" implied="false" onDeleteCascade="false" schema="public" table="submission"/>
+            <parent column="submission_id" foreignKey="dataprofile_dataposition_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_position"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="tag_id" nullable="false" remarks="Unique numeric Tag ID associated with the ingested tag data file" size="19" type="int8" typeCode="-5">
+            <parent column="tag_id" foreignKey="dataprofile_dataposition_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_position"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="variable_id" nullable="false" remarks="Unique variable identifier for the data record from the source eTUFF file ingested.  The variable_id is based on observation or measurment variables listed in the observation_types table" size="19" type="int8" typeCode="-5">
+            <parent column="variable_id" foreignKey="dataprofile_observationtypes_fkey" implied="false" onDeleteCascade="false" schema="public" table="observation_types"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="date_time" nullable="false" remarks="Date/time stamp of the tag data record" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="4" name="depth" nullable="false" remarks="Depth of the tag data record" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="5" name="variable_value" nullable="false" remarks="Geophysical value of the observed tag variable record" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="position_date_time" nullable="true" remarks="Date/time stamp of nearest matched associated positional record" size="35" type="timestamptz" typeCode="93">
+            <parent column="date_time" foreignKey="dataprofile_dataposition_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_position"/>
+         </column>
+         <primaryKey column="submission_id" sequenceNumberInPK="1"/>
+         <primaryKey column="tag_id" sequenceNumberInPK="2"/>
+         <primaryKey column="date_time" sequenceNumberInPK="3"/>
+         <primaryKey column="depth" sequenceNumberInPK="4"/>
+         <primaryKey column="variable_id" sequenceNumberInPK="5"/>
+         <index name="data_profile_pkey" unique="true">
+            <column ascending="true" name="submission_id"/>
+            <column ascending="true" name="tag_id"/>
+            <column ascending="true" name="date_time"/>
+            <column ascending="true" name="depth"/>
+            <column ascending="true" name="variable_id"/>
+         </index>
+         <index name="data_profile_date_time_index" unique="false">
+            <column ascending="true" name="date_time"/>
+         </index>
+         <index name="data_profile_pos_date_time_index" unique="false">
+            <column ascending="true" name="position_date_time"/>
+         </index>
+      </table>
+      <table name="data_time_series" numRows="0" remarks="Contains the continuous measurement archival time series of tag geophysical measurments (migrated from proc_observations)" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="6" id="0" name="date_time" nullable="false" remarks="Date/time stamp of the tag data record" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="variable_id" nullable="false" remarks="Unique variable identifier for the data record from the source eTUFF file ingested.  The variable_id is based on observation or measurment variables listed in the observation_types table" size="19" type="int8" typeCode="-5">
+            <parent column="variable_id" foreignKey="data_time_series_variable_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="observation_types"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="2" name="variable_value" nullable="false" remarks="Geophysical value of the observed tag variable record" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="submission_id" nullable="false" remarks="Unique numeric ID assigned upon submission of a tag eTUFF data file for ingest/importation into Tagbase" size="19" type="int8" typeCode="-5">
+            <parent column="submission_id" foreignKey="data_time_series_data_submission_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="submission"/>
+            <parent column="submission_id" foreignKey="datetimeseries_datapositions_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_position"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="tag_id" nullable="false" remarks="Unique numeric Tag ID associated with the ingested tag data file" size="19" type="int8" typeCode="-5">
+            <parent column="tag_id" foreignKey="datetimeseries_datapositions_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_position"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="position_date_time" nullable="true" remarks="Date/time stamp of nearest matched associated positional record" size="35" type="timestamptz" typeCode="93">
+            <parent column="date_time" foreignKey="datetimeseries_datapositions_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_position"/>
+         </column>
+         <primaryKey column="submission_id" sequenceNumberInPK="1"/>
+         <primaryKey column="tag_id" sequenceNumberInPK="2"/>
+         <primaryKey column="variable_id" sequenceNumberInPK="3"/>
+         <primaryKey column="date_time" sequenceNumberInPK="4"/>
+         <index name="data_time_series_pkey" unique="true">
+            <column ascending="true" name="submission_id"/>
+            <column ascending="true" name="tag_id"/>
+            <column ascending="true" name="variable_id"/>
+            <column ascending="true" name="date_time"/>
+         </index>
+         <index name="data_time_series_date_time_index" unique="false">
+            <column ascending="true" name="date_time"/>
+         </index>
+         <index name="data_time_series_pos_date_time_index" unique="false">
+            <column ascending="true" name="position_date_time"/>
+         </index>
+      </table>
+      <table name="metadata" numRows="0" remarks="Contains the ingested tag metadata consistent with the eTUFF specification" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="submission_id" nullable="false" remarks="Unique numeric ID assigned upon submission of a tag eTUFF data file for ingest/importation into Tagbase" size="19" type="int8" typeCode="-5">
+            <parent column="submission_id" foreignKey="metadata_submission_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="submission"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="attribute_id" nullable="false" remarks="Unique numeric metadata atttribute ID based on the eTUFF metadata specification" size="19" type="int8" typeCode="-5">
+            <parent column="attribute_id" foreignKey="metadata_attribute_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="metadata_types"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="attribute_value" nullable="false" remarks="Value associated with the given eTUFF metadata attribute" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="tag_id" nullable="false" remarks="Unique numeric Tag ID associated with the ingested tag data file" size="19" type="int8" typeCode="-5"/>
+         <primaryKey column="submission_id" sequenceNumberInPK="1"/>
+         <primaryKey column="attribute_id" sequenceNumberInPK="2"/>
+         <index name="metadata_pkey" unique="true">
+            <column ascending="true" name="submission_id"/>
+            <column ascending="true" name="attribute_id"/>
+         </index>
+      </table>
+      <table name="metadata_types" numRows="142" remarks="Contains descriptive information on tag metadata based on the eTUFF specification" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="attribute_id" nullable="false" remarks="Unique numeric metadata atttribute ID based on the eTUFF metadata specification" size="19" type="int8" typeCode="-5">
+            <child column="attribute_id" foreignKey="metadata_attribute_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="metadata"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="category" nullable="false" remarks="Metadata attribute category or group based on the eTUFF metadata specification" size="1024" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="attribute_name" nullable="false" remarks="Name of metadata attribute based on the eTUFF metadata specification" size="1024" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="type" nullable="false" remarks="Metadata attribute format type based on the eTUFF metadata specification" size="1024" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="description" nullable="false" remarks="Description of metadata attribute  based on the eTUFF metadata specification" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="example" nullable="true" remarks="Example value of metadata attribute on the eTUFF metadata specification" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="comments" nullable="true" remarks="Comments or notes relating to the metadata attribute based on the eTUFF metadata specification" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="necessity" nullable="false" remarks="Deisgnation of the metadata attribute as Required, Recommended, or Optional based on the eTUFF metadata specification" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="attribute_id" sequenceNumberInPK="1"/>
+         <index name="metadata_types_pkey" unique="true">
+            <column ascending="true" name="attribute_id"/>
+         </index>
+      </table>
+      <table name="observation_types" numRows="204" remarks="Contains listings and descriptions of observation variable types based on the eTUFF specification" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('observation_types_variable_id_seq'::regclass)" digits="0" id="0" name="variable_id" nullable="false" remarks="Unique variable identifier based on the eTUFF tag data file specification" size="19" type="bigserial" typeCode="-5">
+            <child column="variable_id" foreignKey="datahistogrambindata_observationtypes_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_histogram_bin_data"/>
+            <child column="variable_id" foreignKey="data_histogram_bin_info" implied="false" onDeleteCascade="false" schema="public" table="data_histogram_bin_info"/>
+            <child column="variable_id" foreignKey="dataprofile_observationtypes_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_profile"/>
+            <child column="variable_id" foreignKey="data_time_series_variable_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_time_series"/>
+            <child column="variable_id" foreignKey="proc_observations_variable_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="proc_observations"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="variable_name" nullable="false" remarks="Variable name based on the eTUFF tag data file specification" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="standard_name" nullable="true" remarks="CF Standard name for observation variable, if available" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="variable_source" nullable="true" remarks="Source authority for the given variables" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="variable_units" nullable="true" remarks="Units of the variable based on the eTUFF tag data file specification" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="notes" nullable="true" remarks="Notes or comments relating to the variable" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="standard_unit" nullable="true" remarks="CF canonical standard unit for observation variable, if available" size="255" type="varchar" typeCode="12"/>
+         <primaryKey column="variable_id" sequenceNumberInPK="1"/>
+         <index name="observation_types_pkey" unique="true">
+            <column ascending="true" name="variable_id"/>
+         </index>
+         <index name="observation_types_variable_name_key" unique="true">
+            <column ascending="true" name="variable_name"/>
+         </index>
+      </table>
+      <table name="proc_observations" numRows="0" remarks="Contains staged source tag eTUFF data imported into Tagbase" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="6" id="0" name="date_time" nullable="false" remarks="Date/time stamp of data record from source eTUFF file ingested" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="variable_id" nullable="false" remarks="Unique variable identifier for the data record from the source eTUFF file ingested.  The variable_id is based on observation or measurment variables listed in the observation_types table" size="19" type="int8" typeCode="-5">
+            <parent column="variable_id" foreignKey="proc_observations_variable_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="observation_types"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="2" name="variable_value" nullable="false" remarks="Geophysical value of the given measured variable for the eTUFF data record" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="submission_id" nullable="false" remarks="Unique numeric ID assigned upon submission of a tag eTUFF data file for ingest/importation into Tagbase" size="19" type="int8" typeCode="-5">
+            <parent column="submission_id" foreignKey="proc_observations_submission_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="submission"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="tag_id" nullable="false" remarks="Unique numeric Tag ID associated with the ingested tag data file" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="final_value" nullable="false" remarks="Boolean flag used to trigger data migration after a batch ingest. Whenever a TRUE value is encountered, the data_migration TRIGGER is executed meaning that the data migration task is initiated" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="date_time" sequenceNumberInPK="1"/>
+         <primaryKey column="variable_id" sequenceNumberInPK="2"/>
+         <primaryKey column="submission_id" sequenceNumberInPK="3"/>
+         <index name="proc_observations_pkey" unique="true">
+            <column ascending="true" name="date_time"/>
+            <column ascending="true" name="variable_id"/>
+            <column ascending="true" name="submission_id"/>
+         </index>
+      </table>
+      <table name="submission" numRows="0" remarks="Contains information on source tag eTUFF files submitted for ingest into Tagbase" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('submission_submission_id_seq'::regclass)" digits="0" id="0" name="submission_id" nullable="false" remarks="Unique numeric ID assigned upon submission of a tag eTUFF data file for ingest/importation into Tagbase" size="19" type="bigserial" typeCode="-5">
+            <child column="submission_id" foreignKey="data_histogram_bin_data_submission_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="data_histogram_bin_data"/>
+            <child column="submission_id" foreignKey="data_position_submission_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="data_position"/>
+            <child column="submission_id" foreignKey="dataprofile_submission_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_profile"/>
+            <child column="submission_id" foreignKey="data_time_series_data_submission_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="data_time_series"/>
+            <child column="submission_id" foreignKey="metadata_submission_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="metadata"/>
+            <child column="submission_id" foreignKey="proc_observations_submission_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="proc_observations"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="tag_id" nullable="false" remarks="Unique numeric Tag ID associated with the ingested tag eTUFF data file" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="dmas_granule_id" nullable="true" remarks="Unique numeric file identifier in the PODAAC DMAS catalog for the ingested tag eTUFF data file" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="3" name="date_time" nullable="false" remarks="Local datetime stamp at the time of eTUFF tag data file ingestion" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="filename" nullable="false" remarks="Full name and extension of the ingested eTUFF tag data file" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="version" nullable="true" remarks="Version identifier for the eTUFF tag data file ingested" size="50" type="varchar" typeCode="12"/>
+         <primaryKey column="submission_id" sequenceNumberInPK="1"/>
+         <index name="submission_pkey" unique="true">
+            <column ascending="true" name="submission_id"/>
+         </index>
+      </table>
+   </tables>
+   <routines>
+      <routine dataAccess="MODIFIES" deterministic="false" name="execute_data_migration" returnType="trigger" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="PLPGSQL">
+            <![CDATA[
+  BEGIN
+    --\connect tagbase
+    -- data_time_series
+    WITH moved_rows AS
+      ( DELETE
+       FROM proc_observations a USING submission b,
+                                      observation_types c
+       WHERE c.variable_name IN ('datetime',
+                                 'depth',
+                                 'temperature',
+                                 'light',
+                                 'internal temperature')
+         AND a.submission_id = b.submission_id
+         AND a.variable_id = c.variable_id RETURNING a.date_time,
+                                                     a.variable_id,
+                                                     a.variable_value,
+                                                     a.submission_id,
+                                                     b.tag_id)
+    INSERT INTO data_time_series
+    SELECT *
+    FROM moved_rows;
+    -- -- data_position
+    WITH moved_rows AS
+      ( DELETE
+       FROM proc_observations a USING submission b,
+                                      observation_types c
+       WHERE c.variable_name = 'longitude'
+         AND a.submission_id = b.submission_id
+         AND a.variable_id = c.variable_id RETURNING a.date_time,
+                                                     a.variable_id,
+                                                     a.variable_value,
+                                                     a.submission_id,
+                                                     b.tag_id,
+                                                     cast(('0.0') AS double precision) AS initial_lat)
+    INSERT INTO data_position (date_time, lat, lon, submission_id, tag_id)
+    SELECT date_time,
+           initial_lat,
+           variable_value,
+           submission_id,
+           tag_id
+    FROM moved_rows;
+    WITH moved_rows AS
+      ( DELETE
+       FROM proc_observations a USING data_position b,
+                                      observation_types c
+       WHERE a.submission_id = b.submission_id
+         AND a.date_time = b.date_time
+         AND a.variable_id = c.variable_id
+         AND c.variable_name = 'latitude' RETURNING a.date_time,
+                                                    a.variable_id,
+                                                    a.variable_value,
+                                                    a.submission_id)
+    UPDATE data_position
+    SET lat = moved_rows.variable_value
+    FROM moved_rows
+    WHERE data_position.date_time = moved_rows.date_time
+      AND data_position.submission_id = moved_rows.submission_id;
+    WITH moved_rows AS
+      ( DELETE
+       FROM proc_observations a USING data_position b,
+                                      observation_types c
+       WHERE a.submission_id = b.submission_id
+         AND a.date_time = b.date_time
+         AND a.variable_id = c.variable_id
+         AND c.variable_name = 'longitudeError' RETURNING a.date_time,
+                                                    a.variable_id,
+                                                    a.variable_value,
+                                                    a.submission_id)
+    UPDATE data_position
+    SET lon_err = moved_rows.variable_value
+    FROM moved_rows
+    WHERE data_position.date_time = moved_rows.date_time
+      AND data_position.submission_id = moved_rows.submission_id;
+    WITH moved_rows AS
+      ( DELETE
+       FROM proc_observations a USING data_position b,
+                                      observation_types c
+       WHERE a.submission_id = b.submission_id
+         AND a.date_time = b.date_time
+         AND a.variable_id = c.variable_id
+         AND c.variable_name = 'latitudeError' RETURNING a.date_time,
+                                                    a.variable_id,
+                                                    a.variable_value,
+                                                    a.submission_id)
+    UPDATE data_position
+    SET lat_err = moved_rows.variable_value
+    FROM moved_rows
+    WHERE data_position.date_time = moved_rows.date_time
+      AND data_position.submission_id = moved_rows.submission_id;
+    -- -- data_histogram_bin_info
+    WITH moved_rows AS
+      ( DELETE
+       FROM proc_observations a USING observation_types b,
+                                      submission c
+       WHERE a.variable_id = b.variable_id
+         AND b.variable_name LIKE 'Hist%'
+         AND a.submission_id = c.submission_id RETURNING a.submission_id AS bin_id,
+                                                  cast(substring(variable_name, '(\d+)') AS int) AS bin_class,
+                                                  variable_value)
+    INSERT INTO data_histogram_bin_info
+    SELECT *
+    FROM moved_rows ON CONFLICT DO NOTHING;
+    WITH moved_rows AS
+      ( DELETE
+       FROM proc_observations a USING observation_types b,
+                                      submission c
+       WHERE a.variable_id = b.variable_id
+         AND b.variable_name LIKE 'Hist%'
+         AND a.submission_id = c.submission_id RETURNING a.submission_id AS bin_id,
+                                                  cast(substring(variable_name, '(\d+)') AS int) AS bin_class,
+                                                  variable_value)
+    UPDATE data_histogram_bin_info
+    SET max_value = moved_rows.variable_value
+    FROM moved_rows
+    WHERE data_histogram_bin_info.bin_id = moved_rows.bin_id
+      AND data_histogram_bin_info.bin_class = moved_rows.bin_class;
+    -- data_histogram_bin_data
+    WITH moved_rows AS
+      ( DELETE
+       FROM proc_observations a USING observation_types b,
+                                      submission c
+       WHERE a.variable_id = b.variable_id
+         AND b.variable_name LIKE 'TimeAt%'
+         AND a.submission_id = c.submission_id RETURNING a.submission_id,
+                                                          c.tag_id,
+                                                          a.submission_id AS bin_id,
+                                                          cast(substring(variable_name, '(\d+)') AS int) AS bin_class,
+                                                          a.date_time,
+                                                          variable_value)
+    INSERT INTO data_histogram_bin_data
+    SELECT *
+    FROM moved_rows;
+    -- data_profile
+    WITH moved_rows AS
+      ( DELETE
+       FROM proc_observations a USING observation_types b,
+                                      submission c
+       WHERE a.variable_id = b.variable_id
+         AND b.variable_name LIKE 'PdtDepth%'
+         AND a.submission_id = c.submission_id RETURNING a.date_time,
+                                                         a.variable_id,
+                                                         a.variable_value,
+                                                         a.submission_id,
+                                                         variable_name,
+                                                         c.tag_id)
+    INSERT INTO data_profile (date_time, depth, submission_id, tag_id)
+    SELECT date_time,
+           variable_value,
+           submission_id,
+           tag_id
+    FROM moved_rows;
+    WITH moved_rows AS
+      ( DELETE
+       FROM proc_observations a USING observation_types b,
+                                      data_profile c,
+                                      submission e
+       WHERE a.variable_id = b.variable_id
+         AND b.variable_name LIKE 'PdtTempMin%'
+         AND a.submission_id = c.submission_id
+         AND a.date_time = c.date_time
+         AND e.submission_id = a.submission_id RETURNING a.date_time,
+                                                         a.variable_id,
+                                                         a.variable_value AS variable_value,
+                                                         a.submission_id)
+    UPDATE data_profile
+    SET variable_value = moved_rows.variable_value
+    FROM moved_rows
+    WHERE data_profile.date_time = moved_rows.date_time
+      AND data_profile.submission_id = moved_rows.submission_id;
+    WITH moved_rows AS
+      ( DELETE
+       FROM proc_observations a USING observation_types b,
+                                      data_profile c,
+                                      submission e
+       WHERE a.variable_id = b.variable_id
+         AND b.variable_name LIKE 'PdtTempMax%'
+         AND a.submission_id = c.submission_id
+         AND a.date_time = c.date_time
+         AND e.submission_id = a.submission_id RETURNING a.date_time,
+                                                         a.variable_id,
+                                                         a.variable_value,
+                                                         a.submission_id)
+    UPDATE data_profile
+    SET variable_value = moved_rows.variable_value
+    FROM moved_rows
+    WHERE data_profile.date_time = moved_rows.date_time
+      AND data_profile.submission_id = moved_rows.submission_id;
+    -- SQL update statements to link measurement date time with position date time
+    UPDATE data_time_series
+    SET position_date_time =
+      (SELECT date_time
+       FROM data_position
+       WHERE data_time_series.submission_id = data_position.submission_id
+         AND data_time_series.date_time >= data_position.date_time
+       ORDER BY data_position.date_time DESC
+       LIMIT 1)
+    WHERE position_date_time IS NULL;
+    UPDATE data_histogram_bin_data
+    SET position_date_time =
+      (SELECT date_time
+       FROM data_position
+       WHERE data_histogram_bin_data.submission_id = data_position.submission_id
+         AND data_histogram_bin_data.date_time >= data_position.date_time
+       ORDER BY data_position.date_time DESC
+       LIMIT 1)
+    WHERE position_date_time IS NULL;
+    UPDATE data_profile
+    SET position_date_time =
+      (SELECT date_time
+       FROM data_position
+       WHERE data_profile.submission_id = data_position.submission_id
+         AND data_profile.date_time >= data_position.date_time
+       ORDER BY data_position.date_time DESC
+       LIMIT 1)
+    WHERE position_date_time IS NULL;
+    RETURN NULL;
+  END;
+]]>
+         </definition>
+      </routine>
+   </routines>
+</database>
